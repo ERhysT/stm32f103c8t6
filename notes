@@ -1,0 +1,12 @@
+(gdb)
+
+target remote localhost:3333
+monitor reset init
+monitor flash write_image erase final.elf
+monitor reset halt
+monitor resume
+
+monitor mdw 0x20000000 2    // read value
+monitor bp 0x08000168 2 hw  // hardware break point at address (2Bytes) 
+
+0x08000130 // main
