@@ -5,7 +5,7 @@ TARGET=firmware
 LDFLAGS=-g -nostdlib -Tstm32f103c8t6.ld -Wl,-Map=$(TARGET).map
 OBJ=startup.o main.o rcc.o gpio.o syst.o
 
-.PHONY: all clean flash debugger clean
+.PHONY: all clean flash start-openocd stop-openocd clean test
 
 all:$(TARGET).bin $(TARGET).objdump
 
@@ -17,10 +17,15 @@ $(TARGET).elf: $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 %.o:%.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
+
 flash: $(TARGET).bin
 	st-flash --reset write $(TARGET).bin 0x80000000
-debugger: $(TARGET).elf
-	openocd -f openocd.cfg
+
+start-openocd: $(TARGET).elf
+	systemctl --user start stm32f103c8t6_openocd.service
+stop-openocd:
+	systemctl --user stop stm32f103c8t6_openocd.service
 clean:
 	rm -f *.o firmware{,.{bin,elf,map,objdump}}
-
+test:
+	make -C test/

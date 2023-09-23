@@ -26,7 +26,7 @@ enum {     /* advanced peripheral bus 2 enable resister */
  RCC_APB2ENR_ADC1EN=9, RCC_APB2ENR_ADC2EN, RCC_APB2ENR_TIM1EN,
  RCC_APB2ENR_SPI1EN, RCC_APB2ENR_USART1EN=14
 };
-/* IOPXEN() Enable register bit for a IO pins bank A to E  */
+/* IOPXEN() Enable register bit for a IO bank X, X can be A to E */
 #define RCC_APB2ENR_IOPXEN(X) (RCC_APB2ENR_IOPAEN + X - 'A')
 
 #endif	/* RCC_HEADER */
