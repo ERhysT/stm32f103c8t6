@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenOCD Server
+
+[Service]
+ExecStart=openocd --search /home/rhys/bluepill -f openocd.cfg
+Type=simple
+Restart=always
+
+[Install]
+WantedBy=default.target
+
