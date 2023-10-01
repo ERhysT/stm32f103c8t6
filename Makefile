@@ -20,11 +20,11 @@ $(TARGET).elf: $(OBJ)
 
 flash: $(TARGET).bin
 	st-flash --reset write $(TARGET).bin 0x80000000
-
 start-openocd: $(TARGET).elf
 	systemctl --user start stm32f103c8t6_openocd.service
 stop-openocd:
 	systemctl --user stop stm32f103c8t6_openocd.service
+
 clean:
 	rm -f *.o firmware{,.{bin,elf,map,objdump}}
 test:

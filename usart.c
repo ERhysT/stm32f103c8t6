@@ -5,64 +5,49 @@
 #include "usart.h"
 
 static bool usart_tx_empty(struct usart *h);
+static uint16_t baudtobrr(unsigned baud, unsigned f);
 
-/* usart_setup() for full duplex transmission 
+/** usart_setup() for full duplex transmission 9600 baud
 
-   1. Clock UART1 peripherial using rcc register
+ * Clock UART1 peripherial using rcc register
    
-   UART2 is clocked as shown below		    
+ UART2 is clocked as shown below		    
                                                  
-   SYSCLK -> AHB Prescaler -> APB2 Prescaler -> PCLK2
-   8MHz     /1                /1             -> 8MHz
+ SYSCLK -> AHB Prescaler -> APB2 Prescaler -> PCLK2
+ 8MHz     /1                /1             -> 8MHz
 
-  2. Setup the correct gpio bank and select the correct modes for
-  alternate function on tx and rx pins.
+ * Setup the gpio bank and the modes for alternate function on tx and
+ rx pins.
 
-  4.Program the M bit in USART_CR1 to define the word length.
+ * Select the desired baud rate using the brr register, the format of
+ the baud rate is in the reference manual page 798.
 
-  5.Program the number of stop bits in USART_CR2.
+ * Enable the USART by writing the UE bit in USART_CR1 register to 1.
 
-  6. Select the desired baud rate using the USART_BRR register.
-
-  3. Enable the USART by writing the UE bit in USART_CR1 register to 1.
-*/
-
-struct usart *usart_setup(void)
+**/
+struct usart *usart_setup(unsigned baud)
 {
   //assert(PCLK1 == 8000000, "Expected PCLK1 at 8MHz")
 
-  /* Enable bank A gpio pins in correct mode */
   struct rcc *rcc = RCC;
-
   rcc->apb1enr |= (1<<RCC_APB1ENR_USART2EN); 
-  rcc->apb2enr |= (1<<RCC_APB2ENR_IOPAEN);
-    //rcc->apb1enr |= 0x20000;           // 0b 0000 0000 0000 0010 0000 0000 0000 0000
-  //rcc->apb2enr |= 0x4;
 
-  /* tx Pin 2A Full duplex requires PP */
-  struct gpio *gpio = GPIO('A');
-  //gpio->crl |= 0x900;               // Set PA2 as TX pin (AF)
-  gpio->crl |= (1<<8) | (1<<11); 
+  const char bank = 'A';
+  const unsigned tx = 2;
+  gpio_setup(bank, tx, GPIO_CR_MODE_OUTPUT_10MHZ,
+	     GPIO_CR_CNF_OUTPUT_AFPP);
 
   struct usart *usart = USART2;
-  usart->brr = (0x34<<4) | 1;
+
+  //usart->brr = (0x34<<4) | 1;	/* 9600 baud */
+  usart->brr = baudtobrr(baud, PCLK1);
+  usart->cr1 = (1<<USART_CR1_TE);
+  usart->cr2 = 0;
 
 
 
-
-  //usart->brr  = 0xEA6;              // Setting Baudrate to 9600 @8 MHz.
-  usart->cr1 |= 0x00008;            // Enable TX only
-  usart->cr1 |= 0x02000;            // Enable USART module 
-
-  /* usart->cr1 = 0; */
-  /* usart->cr1 |= (1<<USART_CR1_UE);   /\* enable *\/ */
-  /* usart->cr1 &= ~(1<<USART_CR1_M);   /\* 8 bit words *\/ */
-  /* usart->cr2 |= (1<<USART_CR2_STOP); /\* 1 stop bit *\/ */
-
-
-  /* enable transmit and recieve last so nothing happens during setup */
-  /* usart->cr1 |= (1<<USART_CR1_TE); */
-  //usart->cr1 |= (1<<USART_CR1_RE);
+  /* Enable last so no interupts before fully configured */
+  usart->cr1 |= (1<<USART_CR1_UE);
 
   return usart;
 }
@@ -85,3 +70,34 @@ static bool usart_tx_empty(struct usart *h)
   return h->sr & (1<<USART_SR_TXE);
 }
 
+/* Calulate baud rate register value from baud and clock frequency
+
+   The USART samples at 16x the clock speed
+
+   baud     = f / 16*USARTDIV
+   USARTDIV = f / 16*baud
+
+   e.g. for f=8MHz, baud=9600
+        USARTDIV = 8MHz / 16*9600 = 52.083
+
+   Becuase of the oversampling USARTDIV must be greater than 16.
+
+   USART div is written to the brr register in 12.4 fixed point
+   notation.
+   
+   mantissa = 52 => 0x34
+   fraction = 0.83 * 16 = 1.33 => 1 => 0xF
+
+   USARTDIV(12.4) = 0x341
+   
+   There is a bug whan the fractional part overflows, the mantissa is
+   not increased. */
+static uint16_t baudtobrr(unsigned baud, unsigned f)
+{
+  uint32_t oversampling = 16;
+  uint32_t sample_rate = oversampling * baud;
+
+  uint32_t mantissa = f / sample_rate;
+  uint32_t fraction = ((((f<<5) / sample_rate)+1)>>1) ^ (mantissa<<4);
+  return (mantissa<<4) | fraction;
+}

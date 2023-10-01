@@ -36,7 +36,7 @@ enum { 				/* Status register */
 };
 
 /* setup usart2 for full duplex transmission */
-struct usart *usart_setup(void);
+struct usart *usart_setup(unsigned baud);
 
 /* write a character to usart */
 void usart_write_char(struct usart *h, char c);

@@ -14,10 +14,10 @@ void toggle_led(void)
   static bool on = true;
   static struct gpio *gpioc = NULL;
 
-
   if (NULL == gpioc)
-    gpioc = gpio_init('C', LEDPIN, GPIO_CR_CNF_OUTPUT_OD,
-		      GPIO_CR_MODE_OUTPUT_10MHZ);
+    gpioc = gpio_setup('C', LEDPIN,
+		       GPIO_CR_MODE_OUTPUT_10MHZ,
+		       GPIO_CR_CNF_OUTPUT_OD);
 
   if ( syst_timer_expired(&timer, 1000, systick) ) {
     if (on) {
@@ -32,12 +32,13 @@ void toggle_led(void)
 
 void write_usart(void)
 {
+  static unsigned baud = 9600;
   static uint32_t timer = 0;
   static char s[] = "Hello, world!\r\n";
   static struct usart *usart = NULL;
 
   if ( NULL == usart)
-    usart = usart_setup();
+    usart = usart_setup(baud);
   if ( syst_timer_expired(&timer, 1000, systick) )
     for (char *cur = s; *cur != '\0'; ++cur)
       usart_write_char(usart, *cur);
