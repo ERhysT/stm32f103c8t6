@@ -18,7 +18,7 @@ gpio_init(char bank, unsigned pin, uint32_t cnf, uint32_t mode)
   struct rcc *rcc = RCC;
   rcc->apb2enr |= 1UL << RCC_APB2ENR_IOPXEN(bank);
 
-  /* separtate configuration registers for high and low pins */
+  /* separate configuration registers for high and low pins */
   struct gpio *gpio = GPIO(bank);
   volatile uint32_t *cr = (pin > 7) ? &gpio->crh : &gpio->crl;
   *cr |= cnf << GPIO_CR_CNF_BIT(pin);

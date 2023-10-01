@@ -15,17 +15,23 @@ struct gpio {
 /* GPIO configuration low/high registers (crl/crh) */
 #define GPIO_CR_CNF_BIT(pin)     ((uint32_t)((pin % 8) * 4))
 #define GPIO_CR_MODE_BIT(pin)    ((uint32_t)(GPIO_CR_CNF_BIT(pin) + 2))
-enum { /* GPIO configuration registers cnf bit values */
+
+enum { /* GPIO configuration reisters MODE bit values */
+  GPIO_CR_MODE_INPUT,
+  GPIO_CR_MODE_OUTPUT_10MHZ,
+  GPIO_CR_MODE_OUTPUT_2MHZ,
+  GPIO_CR_MODE_OUTPUT_50MHZ,
+};
+enum { /* GPIO configuration registers CNF output bit values*/
   GPIO_CR_CNF_OUTPUT_PP,
   GPIO_CR_CNF_OUTPUT_OD,
   GPIO_CR_CNF_OUTPUT_AFPP,
   GPIO_CR_CNF_OUTPUT_AFOD
 };
-enum { /* GPIO configuration reisters mode bit values */
-  GPIO_CR_MODE_INPUT,
-  GPIO_CR_MODE_OUTPUT_10MHZ,
-  GPIO_CR_MODE_OUTPUT_2MHZ,
-  GPIO_CR_MODE_OUTPUT_50MHZ,
+enum { /* GPIO configuration registers CNF input bit values*/
+  GPIO_CR_CNF_INPUT_ANALOG,
+  GPIO_CR_CNF_INPUT_FLOAT,
+  GPIO_CR_CNF_INPUT_PUPD,
 };
 
 /* GPIO bit set/reset registers (bsrr) */
