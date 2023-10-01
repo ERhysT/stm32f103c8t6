@@ -14,7 +14,7 @@ struct gpio {
 
 /* GPIO configuration low/high registers (crl/crh) */
 #define GPIO_CR_MODE_BIT(pin) ((uint32_t)((pin % 8) * 4))
-enum { /* GPIO configuration reisters MODE bit values */
+enum { /* GPIO configuration reisters MODE flags */
   GPIO_CR_MODE_INPUT,
   GPIO_CR_MODE_OUTPUT_10MHZ,
   GPIO_CR_MODE_OUTPUT_2MHZ,
@@ -22,13 +22,13 @@ enum { /* GPIO configuration reisters MODE bit values */
 };
 
 #define GPIO_CR_CNF_BIT(pin)  ((uint32_t)(GPIO_CR_MODE_BIT(pin) + 2))
-enum { /* GPIO configuration registers CNF output bit values*/
+enum { /* GPIO configuration registers CNF output flags */
   GPIO_CR_CNF_OUTPUT_PP,
   GPIO_CR_CNF_OUTPUT_OD,
   GPIO_CR_CNF_OUTPUT_AFPP,
   GPIO_CR_CNF_OUTPUT_AFOD
 };
-enum { /* GPIO configuration registers CNF input bit values*/
+enum { /* GPIO configuration registers CNF input flags */
   GPIO_CR_CNF_INPUT_ANALOG,
   GPIO_CR_CNF_INPUT_FLOAT,
   GPIO_CR_CNF_INPUT_PUPD,
