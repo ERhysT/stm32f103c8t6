@@ -13,15 +13,15 @@ struct gpio {
 };
 
 /* GPIO configuration low/high registers (crl/crh) */
-#define GPIO_CR_CNF_BIT(pin)     ((uint32_t)((pin % 8) * 4))
-#define GPIO_CR_MODE_BIT(pin)    ((uint32_t)(GPIO_CR_CNF_BIT(pin) + 2))
-
+#define GPIO_CR_MODE_BIT(pin) ((uint32_t)((pin % 8) * 4))
 enum { /* GPIO configuration reisters MODE bit values */
   GPIO_CR_MODE_INPUT,
   GPIO_CR_MODE_OUTPUT_10MHZ,
   GPIO_CR_MODE_OUTPUT_2MHZ,
   GPIO_CR_MODE_OUTPUT_50MHZ,
 };
+
+#define GPIO_CR_CNF_BIT(pin)  ((uint32_t)(GPIO_CR_MODE_BIT(pin) + 2))
 enum { /* GPIO configuration registers CNF output bit values*/
   GPIO_CR_CNF_OUTPUT_PP,
   GPIO_CR_CNF_OUTPUT_OD,
@@ -38,7 +38,17 @@ enum { /* GPIO configuration registers CNF input bit values*/
 #define GPIO_BSRR_RESET_BIT(pin) ((uint32_t)(1 << pin))
 #define GPIO_BSRR_SET_BIT(pin)   ((uint32_t)((1 << 16 << pin)))
 
-struct gpio *gpio_init(char bank, unsigned pin, uint32_t cnf, uint32_t mode);
+/* gpio_setup() power up bank and configure a gpio pin
+
+   bank: GPIO bank from A to G
+   pin:  pin number from 0 to 15
+   mode: operating mode from GPIO_CR_MODE flags
+   cnf: configuration from GPIO_CR_CNF flags
+
+   returns handle to the gpio bank register.
+ */
+struct gpio *gpio_setup(char bank, unsigned pin,
+			uint32_t mode, uint32_t cnf);
 
 #endif	/* GPIO_HEADER */
 
