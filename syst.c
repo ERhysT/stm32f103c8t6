@@ -22,14 +22,19 @@ void syst_handler(void) {
 
   For a millisecond timer:
 
-  HSI -> SYSCLK -> AHB prescaler 0x00 -> /8   -> Cortex Sytem Timer
-  8MHz   8MHz      8MHz                  1MHz    1MHz
+  HSI -> SYSCLK -> AHB prescaler /1 -> /8   -> Cortex Sytem Timer
+  8MHz   8MHz      8MHz                1MHz    1MHz
      
   So we will get 1e6 ticks per second, we want 1e3 ticks per second
   (/ 8e6 8 1000) ;1000.0
 */
 void syst_init(struct syst* syst, uint32_t ticks)
 {
+  /*assert(HSICLK == 8000000);
+  assert(SYSCLK == 8000000);
+  assert(!(RCC->cfgr & (0b100<<RCC_CFGR_HPRE)) &&
+  "SYSCLK divided. Unexpected AHB prescaler value."); */
+
   /* Size of the reload value resister determines the maximum number
      of ticks */
   if (ticks > SYST_RVR_RELOAD_MSK)
