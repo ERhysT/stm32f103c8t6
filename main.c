@@ -6,6 +6,8 @@
 #include "usart.h"
 #include "main.h"
 
+#include <stdio.h>
+
 #define LEDPIN 13		/* PC13 */
 
 void toggle_led(void)
@@ -52,6 +54,8 @@ int main(void) {
   /* millisecond timer */
   struct syst *syst = SYST;
   syst_init(syst, 1000);
+
+  printf("hello!");
 
   /* setup tasks */
   size_t n = 0;

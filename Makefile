@@ -2,8 +2,8 @@ CC=arm-none-eabi-gcc
 CPU=cortex-m3
 CFLAGS=-mcpu=$(CPU) -mthumb -Wall -g3 -std=gnu11 -O0
 TARGET=firmware
-LDFLAGS=-g -nostdlib -Tstm32f103c8t6.ld -Wl,-Map=$(TARGET).map
-OBJ=startup.o main.o rcc.o gpio.o syst.o usart.o
+LDFLAGS=-g -nostartfiles -Tstm32f103c8t6.ld -Wl,-Map=$(TARGET).map
+OBJ=startup.o main.o rcc.o gpio.o syst.o usart.o syscalls.o
 
 .PHONY: all clean flash start-openocd stop-openocd clean test
 
