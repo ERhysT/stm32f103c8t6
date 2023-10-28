@@ -2,11 +2,12 @@
 
 void _reset(void);
 extern void main(void);
-extern void _estack(void);	   /* stm32f103c8t6.ld */
-extern void syst_handler(void);	   /* syst.c */
+extern void _estack(void);	   /* from stm32f103c8t6.ld */
+extern void syst_handler(void);
+extern void usart_handler(void);
 
-/* Interupt request vector table with 16 standard and 60 device
-   specific see table 63 RM0008*/
+/* interupt request vector table with 16 standard and 60 device
+   specific see table 63 in reference manual*/
 __attribute__((section(".vectors")))
 void (*const tab[16+60])(void) = {
   [0] = _estack, [1] = _reset, [15] = syst_handler
@@ -26,12 +27,15 @@ __attribute__((naked, noreturn))
 void
 _reset(void)
 {
-  extern long _sbss, _ebss, _sdata, _edata, _sidata;  // from linker script
-  for (long *src = &_sbss; src < &_ebss; *src++ = 0)
-    ;
-  for (long *src = &_sdata, *dst = &_sidata; src < &_edata; *src++ = *dst++)
-    ;
+  typedef long ldsym;		/* linker symbols */
+  extern ldsym _sbss, _ebss, _sdata, _edata, _sidata;
+
+  for (ldsym *src = &_sbss; src < &_ebss;)
+     *src++ = 0;
+  for (ldsym *src = &_sdata, *dst = &_sidata; src < &_edata;)
+    *src++ = *dst++;
 
   main();             
-  for (;;) (void) 0;  // in case main() returns
+  for (;;)
+    (void) 0;  // in case main() returns
 }
