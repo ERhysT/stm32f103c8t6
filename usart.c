@@ -33,20 +33,18 @@ struct usart *usart_setup(unsigned baud)
   rcc->apb1enr |= (1<<RCC_APB1ENR_USART2EN); 
 
   const char bank = 'A';
-  const unsigned tx = 2;
+  const unsigned tx = 2, rx = 3;
   gpio_setup(bank, tx, GPIO_CR_MODE_OUTPUT_10MHZ,
 	     GPIO_CR_CNF_OUTPUT_AFPP);
+  gpio_setup(bank, rx, GPIO_CR_MODE_INPUT,
+	     GPIO_CR_CNF_INPUT_PUPD);
 
   struct usart *usart = USART2;
-
-  //usart->brr = (0x34<<4) | 1;	/* 9600 baud */
   usart->brr = baudtobrr(baud, PCLK1);
-  usart->cr1 = (1<<USART_CR1_TE);
+  usart->cr1 = (1<<USART_CR1_TE) | (1<<USART_CR1_RE);
   usart->cr2 = 0;
 
-
-
-  /* Enable last so no interupts before fully configured */
+  /* Enabled last so no interupts before fully configured */
   usart->cr1 |= (1<<USART_CR1_UE);
 
   return usart;
@@ -61,11 +59,44 @@ void usart_write_char(struct usart *h, char c)
     ;
 }
 
+/* 
+
+ * The RXNE bit is set. It indicates that the content of the shift
+ register is transferred to the RDR. In other words, data has been
+ received and can be read (as well as its associated error flags).
+ 
+ * An interrupt is generated if the RXNEIE bit is set.
+
+ * The error flags can be set if a frame error, noise or an overrun
+ error has been detected during reception.
+
+ * In multibuffer, RXNE is set after every byte received and is
+ cleared by the DMA read to the Data register.
+
+ * In single buffer mode, clearing the RXNE bit is performed by a
+ software read to the USART_DR register. The RXNE flag can also be
+ cleared by writing a zero to it. The RXNE bit must be cleared before
+ the end of the reception of the next character to avoid an overrun
+ error.
+
+ The RE bit should not be reset while receiving data. If the RE bit is
+ disabled during reception, the reception of the current byte will be
+ aborted.
+*/
+
+/* A USART interrupt is generated whenever ORE=1 or RXNE=1 in the
+   USART_SR register */
+void usart2_handler(void)
+{
+  return; 			/* not implemented */
+}
+
 /* TRUE when data has been transmitted to the shift register.
 
    Cleared by a write to the DR register.
  */
-static bool usart_tx_empty(struct usart *h)
+static inline bool usart_tx_empty(struct usart *h)
+
 {
   return h->sr & (1<<USART_SR_TXE);
 }
@@ -92,7 +123,7 @@ static bool usart_tx_empty(struct usart *h)
    
    There is a bug whan the fractional part overflows, the mantissa is
    not increased. */
-static uint16_t baudtobrr(unsigned baud, unsigned f)
+static inline uint16_t baudtobrr(unsigned baud, unsigned f)
 {
   uint32_t oversampling = 16;
   uint32_t sample_rate = oversampling * baud;
