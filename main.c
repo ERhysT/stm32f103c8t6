@@ -1,4 +1,4 @@
-#include "stddef.h"
+#include <stddef.h>
 
 #include "rcc.h"
 #include "gpio.h"
@@ -36,26 +36,28 @@ void write_usart(void)
 {
   static unsigned baud = 9600;
   static uint32_t timer = 0;
-  static char s[] = "Hello, world!\r\n";
+  static char t[] = "Starting ERTOS...\r\n";
   static struct usart *usart = NULL;
 
   if ( NULL == usart)
     usart = usart_setup(baud);
-  if ( syst_timer_expired(&timer, 1000, systick) )
-    for (char *cur = s; *cur != '\0'; ++cur)
-      usart_write_char(usart, *cur);
+  if ( syst_timer_expired(&timer, 1000, systick) ) {
+    puts("ROFL");
+    usart_write_str(USART2, t,  sizeof t);
+
+  }
+  
+  /*   for (char *cur = t; *cur != '\0'; ++cur) { */
+  /*     usart_write_char(usart, *cur); */
+  /*   } */
+  /* puts("OMG"); */
 }
 
 int main(void) {
 
-  //struct rcc *rcc = RCC;
-  //rcc->cfgr |= (0b0110<<RCC_CFGR_PLLMUL);
-
   /* millisecond timer */
   struct syst *syst = SYST;
   syst_init(syst, 1000);
-
-  printf("hello!");
 
   /* setup tasks */
   size_t n = 0;
@@ -73,7 +75,3 @@ int main(void) {
 
   return 0; 
 }
-
-
-
-

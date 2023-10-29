@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h>
 
 #include "rcc.h"
 #include "gpio.h"
@@ -58,6 +60,13 @@ void usart_write_char(struct usart *h, char c)
   while ( !usart_tx_empty(h) )
     ;
 }
+
+void usart_write_str(struct usart *h, const char *s, size_t len)
+{
+  for (const char *cur = s; *cur != '\0' && cur-s < len; cur++)
+    usart_write_char(h, *cur);
+}
+
 
 /* 
 

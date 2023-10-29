@@ -58,8 +58,14 @@ MEMORY {
 _estack     = ORIGIN(sram) + LENGTH(sram); /* end of the stack */
 
 SECTIONS {
- .vectors  : { KEEP(*(.vectors)) }   > rom
- .text     : { *(.text*) }           > rom
+ .vectors : { KEEP(*(.vectors)) }   > rom
+
+ .text : {
+    *(.text*)
+    *(.init)
+    *(.fini)
+  } > rom
+
  .rodata   : { *(.rodata*) }         > rom
 
  .data : {
@@ -71,10 +77,14 @@ SECTIONS {
 
  .bss : {
    _sbss = .;
+   __bss_start__ = _sbss;  		/* debugging */
    *(.bss SORT(.bss.*) COMMON)
+   . = ALIGN(8);
    _ebss = .;
+   __bss_end__ = _ebss; 		/* debugging */
+   . = ALIGN(8);
+   end = .;
  } > sram
 
- . = ALIGN(8);
- _end = .;
+
 }

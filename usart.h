@@ -2,6 +2,9 @@
 #ifndef GAURD_USART_H
 #define GAURD_USART_H
 
+#include <stdint.h>
+#include <stddef.h>
+
 #define USART_BAUD 4800
 #define USART_WORD_LENGTH 8
 
@@ -45,5 +48,6 @@ struct usart *usart_setup(unsigned baud);
 
 /* write a character to usart */
 void usart_write_char(struct usart *h, char c);
+void usart_write_str(struct usart *h, const char *s, size_t len);
 
 #endif /* GAURD_USART_H */

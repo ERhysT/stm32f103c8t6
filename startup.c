@@ -1,8 +1,9 @@
 /* STM32F103C8T6 startup */
 
 void _reset(void);
+extern void __libc_init_array();
 extern void main(void);
-extern void _estack(void);	   /* from stm32f103c8t6.ld */
+extern void _estack(void);
 extern void syst_handler(void);
 extern void usart_handler(void);
 
@@ -35,7 +36,9 @@ _reset(void)
   for (ldsym *src = &_sdata, *dst = &_sidata; src < &_edata;)
     *src++ = *dst++;
 
+  __libc_init_array();
   main();             
-  for (;;)
-    (void) 0;  // in case main() returns
+
+  for (;;) // in case main() returns
+    (void) 0;  
 }

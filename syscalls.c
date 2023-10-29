@@ -1,53 +1,46 @@
-#include <stdint.h>
-#include <stddef.h>
 #include <sys/stat.h>
 
 #include "syscalls.h"
 #include "usart.h"
 
-/* Initially the heap is set to the end of the bss section. Each
-   sequential call to _sbrk increases the size of the heap.*/
-void *_sbrk(int incr)
-{
-  typedef long ldsym;  		/* linker symbol */
+int _write(int fd, char *s, int len) {
+  static char t[] = "Oioioi\r\n";
 
-  extern ldsym _ebss;
-  static uint32_t *brk = NULL;
+  if (fd == 1)
+    usart_write_str(USART2,t,  sizeof t);
+      //usart_write_str(USART2, s, len);
 
-  if (NULL == brk) 
-    brk = (uint32_t *) &_ebss;
-
-  return (void *)(brk + incr);
+  return -1;
 }
 
-/* Write max len bytes from buffer to file id */
-int _write(int fd, char *buf, int len)
-{
-  int n = 0;
-
-  if (fd == 1) 	   // stdout on USART2
-    for (n = 0; n < len && buf[n] != '\0'; ++n)
-      usart_write_char(USART2, buf[n]);
-
-  return n;
+int _fstat(int fd, struct stat *st) {
+  return -1;
 }
 
-int _read (int fd, char *buf, int len)
-{
-  return 0;
+void *_sbrk(int incr) {
+  extern char end asm("end");
+  static char *heap_end = NULL;
+  char *prev_heap_end;
+
+  if (NULL == heap_end)
+    heap_end = &end;
+
+  prev_heap_end = heap_end;
+  heap_end +=incr;
+
+  return prev_heap_end;
 }
 
 int _close(int fd) {
   return -1;
 }
 
-int _fstat(int file, struct stat *st) {
-  st->st_mode = S_IFCHR;
-  return 0;
-}
-
 int _isatty(int fd) {
   return 1;
+}
+
+int _read(int fd, char *ptr, int len) {
+  return -1;
 }
 
 int _lseek(int fd, int ptr, int dir) {
@@ -55,15 +48,5 @@ int _lseek(int fd, int ptr, int dir) {
 }
 
 void _exit(int status) {
-  __asm("BKPT #0");
-  for (;;) (void) 0;
-}
-
-void _kill(int pid, int sig)
-{
-  return;
-}
-
-int _getpid(void) {
-  return -1;
+  for (;;);
 }
