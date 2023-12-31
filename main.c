@@ -42,15 +42,13 @@ void write_usart(void)
   if ( NULL == usart)
     usart = usart_setup(baud);
   if ( syst_timer_expired(&timer, 1000, systick) ) {
-    puts("ROFL");
-    usart_write_str(USART2, t,  sizeof t);
-
+    puts(t);
   }
-  
-  /*   for (char *cur = t; *cur != '\0'; ++cur) { */
-  /*     usart_write_char(usart, *cur); */
-  /*   } */
-  /* puts("OMG"); */
+}
+
+void read_adc(void)
+{
+  return
 }
 
 int main(void) {

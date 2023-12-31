@@ -4,12 +4,8 @@
 #include "usart.h"
 
 int _write(int fd, char *s, int len) {
-  static char t[] = "Oioioi\r\n";
-
   if (fd == 1)
-    usart_write_str(USART2,t,  sizeof t);
-      //usart_write_str(USART2, s, len);
-
+    usart_write_str(USART2, s, len);
   return -1;
 }
 

@@ -27,9 +27,10 @@ static uint16_t baudtobrr(unsigned baud, unsigned f);
  * Enable the USART by writing the UE bit in USART_CR1 register to 1.
 
 **/
+
 struct usart *usart_setup(unsigned baud)
 {
-  //assert(PCLK1 == 8000000, "Expected PCLK1 at 8MHz")
+  /* assert(PCLK1 == 8000000, "Expected PCLK1 at 8MHz") */
 
   struct rcc *rcc = RCC;
   rcc->apb1enr |= (1<<RCC_APB1ENR_USART2EN); 
