@@ -5,10 +5,10 @@ extern void __libc_init_array();
 extern void __stack_end__(void);
 extern void main(void);
 extern void syst_handler(void);
-extern void usart_handler(void);
+extern void usart2_handler(void);
 
 /* interupt request vector table with 16 standard and 60 device
-   specific see table 63 in reference manual*/
+   specific see table 63 in reference manual */
 __attribute__((section(".vectors")))
 void (*const tab[16+60])(void) = {
   [0] = __stack_end__, [1] = _reset, [15] = syst_handler

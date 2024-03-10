@@ -11,7 +11,7 @@
 #define HSICLK 8000000	    /* High speed internal clock */
 #define SYSCLK 8000000	    /* System clock */
 #define PCLK1  8000000	    /* Peripherial clock 1 */
-
+#define PCLK2  0	    /* Peripherial clock 2 */
 
 /* Reset and clock control register map */
 struct rcc {

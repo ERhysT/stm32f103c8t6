@@ -27,7 +27,6 @@ static uint16_t baudtobrr(unsigned baud, unsigned f);
  * Enable the USART by writing the UE bit in USART_CR1 register to 1.
 
 **/
-
 struct usart *usart_setup(unsigned baud)
 {
   /* assert(PCLK1 == 8000000, "Expected PCLK1 at 8MHz") */
@@ -35,6 +34,7 @@ struct usart *usart_setup(unsigned baud)
   struct rcc *rcc = RCC;
   rcc->apb1enr |= (1<<RCC_APB1ENR_USART2EN); 
 
+  /* Configure GPIO */
   const char bank = 'A';
   const unsigned tx = 2, rx = 3;
   gpio_setup(bank, tx, GPIO_CR_MODE_OUTPUT_10MHZ,
@@ -42,12 +42,13 @@ struct usart *usart_setup(unsigned baud)
   gpio_setup(bank, rx, GPIO_CR_MODE_INPUT,
 	     GPIO_CR_CNF_INPUT_PUPD);
 
+  /* Enable USART set baudrate and enable tx and rx */
   struct usart *usart = USART2;
   usart->brr = baudtobrr(baud, PCLK1);
   usart->cr1 = (1<<USART_CR1_TE) | (1<<USART_CR1_RE);
   usart->cr2 = 0;
 
-  /* Enabled last so no interupts before fully configured */
+  /* Enable USART last so no interupts before fully configured */
   usart->cr1 |= (1<<USART_CR1_UE);
 
   return usart;
@@ -67,7 +68,6 @@ void usart_write_str(struct usart *h, const char *s, size_t len)
   for (const char *cur = s; *cur != '\0' && cur-s < len; cur++)
     usart_write_char(h, *cur);
 }
-
 
 /* 
 

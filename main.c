@@ -36,19 +36,28 @@ void write_usart(void)
 {
   static unsigned baud = 9600;
   static uint32_t timer = 0;
-  static char t[] = "Starting ERTOS...\r\n";
+  static char welcome_msg[] = "Starting ERTOS...\r\n";
   static struct usart *usart = NULL;
 
-  if ( NULL == usart)
+  if ( NULL == usart) {
     usart = usart_setup(baud);
+    puts(welcome_msg);
+  }
+
+  // wait for input
   if ( syst_timer_expired(&timer, 1000, systick) ) {
-    puts(t);
+
+    printf("Data present? [%d]\r\n", usart->sr & (1<<UART_SR_RXNE));
+    if ( usart->sr & (1<<UART_SR_RXNE) ) {
+      printf("Read '%c'\r\n", 0xFF & usart->dr);
+    }
+
   }
 }
 
 void read_adc(void)
 {
-  return
+  return;
 }
 
 int main(void) {
