@@ -1,0 +1,37 @@
+ERTOS baremetal stm32f103c8t6 "bluepill"
+
+Prerequisites are gcc, gdb and openocd.
+
+Connections:
+
+* Connect ST-LINK V2 to onboard debugger
+* Connect UART TX A2, RX A3
+
+Compile using `make all`, this will output firmware as well as an
+objdump file for inspection.
+
+For OpenOCD with STLINK-V2 debugging there is a systemd service file
+provided which you should change to match the location of the
+openocd.cfg for the device before installing (--user).
+
+The custom openocd.cfg is becuase my chip is not a real bluepill but a
+clone. Once the service file is installed the server will be started
+and stopped automatically when you open gdb. See .gdbinit for details,
+or delete it if you dont install the service file and do it another
+way.
+
+You can flash the decvice in gdb by calling the flash function defined
+in the gdb init file. Read this file to see the startup proceedure.
+
+## Usage
+
+make all
+systemctl --user start stm32f103c8t6_openocd.service
+gdb
+continue
+
+make screen # (use C-a ? to get screen keybinds, hint: C-a k to quit)
+
+
+
+
