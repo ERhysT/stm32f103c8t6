@@ -132,7 +132,8 @@ static inline bool usart_tx_empty(struct usart *h)
    USARTDIV(12.4) = 0x341
    
    There is a bug whan the fractional part overflows, the mantissa is
-   not increased. */
+   not increased, I think there must be a better way to do this.
+*/
 static inline uint16_t baudtobrr(unsigned baud, unsigned f)
 {
   uint32_t oversampling = 16;
@@ -140,5 +141,6 @@ static inline uint16_t baudtobrr(unsigned baud, unsigned f)
 
   uint32_t mantissa = f / sample_rate;
   uint32_t fraction = ((((f<<5) / sample_rate)+1)>>1) ^ (mantissa<<4);
+  
   return (mantissa<<4) | fraction;
 }
