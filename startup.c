@@ -5,7 +5,6 @@ extern void __libc_init_array();
 extern void __stack_end__(void);
 extern void main(void);
 extern void syst_handler(void);
-extern void usart2_handler(void);
 
 /* interupt request vector table with 16 standard and 60 device
    specific see table 63 in reference manual */
