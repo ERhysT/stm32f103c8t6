@@ -7,9 +7,9 @@ OBJ=startup.o main.o rcc.o gpio.o syst.o usart.o syscalls.o
 
 # -nostartfiles
 
-.PHONY: all clean flash start-openocd stop-openocd clean test
+.PHONY: all clean flash start-openocd stop-openocd clean test tags
 
-all:$(TARGET).bin $(TARGET).objdump
+all: tags $(TARGET).bin $(TARGET).objdump 
 
 $(TARGET).bin: $(TARGET).elf
 	arm-none-eabi-objcopy -O binary $< $@
@@ -33,3 +33,5 @@ clean:
 	rm -f *.o firmware{,.{bin,elf,map,objdump}}
 test:
 	make -C test/
+tags:
+	etags *.c *.h
