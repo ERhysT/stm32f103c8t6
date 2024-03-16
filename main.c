@@ -45,11 +45,12 @@ void write_usart(void)
   }
 
   // wait for input
-  if ( syst_timer_expired(&timer, 1000, systick) ) {
+  if ( syst_timer_expired(&timer, 100, systick) ) {
 
-    printf("Data present? [%d]\r\n", usart->sr & (1<<UART_SR_RXNE));
-    if ( usart->sr & (1<<UART_SR_RXNE) ) {
-      printf("Read '%c'\r\n", 0xFF & usart->dr);
+    int ch = usart_read_char(usart);
+    if (ch > -1) {
+      putchar(ch);
+      fflush(stdout);
     }
 
   }

@@ -7,13 +7,14 @@
 #include "usart.h"
 
 static bool usart_tx_empty(struct usart *h);
+static inline bool usart_rx_full(struct usart *h);
 static uint16_t baudtobrr(unsigned baud, unsigned f);
 
 /** usart_setup() for full duplex transmission 9600 baud
 
- * Clock UART1 peripherial using rcc register
+ * Clock USART1 peripherial using rcc register
    
- UART2 is clocked as shown below		    
+ USART2 is clocked as shown below		    
                                                  
  SYSCLK -> AHB Prescaler -> APB2 Prescaler -> PCLK2
  8MHz     /1                /1             -> 8MHz
@@ -69,14 +70,26 @@ void usart_write_str(struct usart *h, const char *s, size_t len)
     usart_write_char(h, *cur);
 }
 
+/* read and return character from usart data register or return -1
+   if there is none present. */
+int usart_read_char(struct usart *h)
+{
+  return usart_rx_full(h) ? h->dr : -1;
+}
+
 /* TRUE when data has been transmitted to the shift register.
 
    Cleared by a write to the DR register.
  */
 static inline bool usart_tx_empty(struct usart *h)
-
 {
   return h->sr & (1<<USART_SR_TXE);
+}
+
+/* True if character to be read is present in dr */
+static inline bool usart_rx_full(struct usart *h)
+{
+  return h->sr & (1<<USART_SR_RXNE);
 }
 
 /* Calulate baud rate register value from baud and clock frequency

@@ -16,11 +16,6 @@ struct usart {
   volatile uint32_t sr, dr, brr, cr1, cr2, cr3, gtpr;
 };
 
-enum {				/* status register */
-  UART_SR_PE, UART_SR_FE, UART_SR_NE, UART_SR_ORE, UART_SR_IDLE,
-  UART_SR_RXNE, UART_SR_TC, UART_SR_TXE, UART_SR_LBD, UART_SR_CTS
-};
-
 enum {				/* control register 1 */
   USART_CR1_SBK, USART_CR1_RWU, USART_CR1_RE, USART_CR1_TE,
   USART_CR1_IDLEIE, USART_CR1_RXNEIE, USART_CR1_TCIE,
@@ -46,8 +41,9 @@ enum { 				/* Status register */
 /* setup usart2 for full duplex transmission */
 struct usart *usart_setup(unsigned baud);
 
-/* write a character to usart */
+/* read/write to usart */
 void usart_write_char(struct usart *h, char c);
 void usart_write_str(struct usart *h, const char *s, size_t len);
+int usart_read_char(struct usart *h);
 
 #endif /* GAURD_USART_H */
