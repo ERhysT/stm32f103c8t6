@@ -12,7 +12,7 @@ end
 
 define flash
   monitor reset init
-  monitor flash write_image erase /home/rhys/bluepill/firmware.elf
+  monitor flash write_image erase /home/rhys/ertos/firmware.elf
   monitor reset halt
 end
 

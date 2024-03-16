@@ -2,7 +2,7 @@
 Description=OpenOCD Server
 
 [Service]
-ExecStart=openocd --search /home/rhys/bluepill -f openocd.cfg
+ExecStart=openocd --search /home/rhys/ertos -f openocd.cfg
 Type=simple
 Restart=always
 
