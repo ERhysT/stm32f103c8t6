@@ -2,3 +2,4 @@ baremetalembedded/
 doc/
 *.o
 firmware.*
+TAGS
