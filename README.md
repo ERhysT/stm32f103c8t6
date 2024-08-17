@@ -1,6 +1,8 @@
 ERTOS stm32f103c8t6 "bluepill" baremetal testing
 
-Functions: Blinks LED on PC13, mirrors UART RX back to TX
+Functions:
+* Blinks LED on PC13
+* Mirrors UART RX back to TX
 
 Software used: gcc, gdb, GNU make, GNU screen and openocd.
 
