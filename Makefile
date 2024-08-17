@@ -20,18 +20,19 @@ $(TARGET).elf: $(OBJ)
 %.o:%.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-flash: $(TARGET).bin
-	st-flash --reset write $(TARGET).bin 0x80000000
+## Flashes using st-flash (not used)
+## flash: $(TARGET).bin
+##	st-flash --reset write $(TARGET).bin 0x80000000
 
+## Utilities
 start-openocd: $(TARGET).elf
 	systemctl --user start stm32f103c8t6_openocd.service
 stop-openocd:
 	systemctl --user stop stm32f103c8t6_openocd.service
+
 screen:
 	sudo screen /dev/ttyUSB0 9600 8N1
 clean:
 	rm -f *.o firmware{,.{bin,elf,map,objdump}}
-test:
-	make -C test/
 tags:
 	etags *.c *.h
