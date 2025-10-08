@@ -35,9 +35,9 @@ _reset(void)
   for (ldsym *src = &__bss_start__;
        src < &__bss_end__;)
      *src++ = 0;
-  for (ldsym *src = &__data_start__, *dst = &__data_load_start__;
-       src < &__data_end__;)
-    *src++ = *dst++;
+  for (ldsym *dst = &__data_start__, *src = &__data_load_start__;
+       dst < &__data_end__;)
+    *dst++ = *src++;
 
   __libc_init_array();
   main();             
